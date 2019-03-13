@@ -8,9 +8,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Bulletin_Bored</RootNamespace>
     <AssemblyName>Bulletin-Bored</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -47,6 +48,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DbAdapter\DbAdapter.csproj">
+      <Project>{5c4a3a6a-db4b-4fee-a6e8-a34dd306625f}</Project>
+      <Name>DbAdapter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DbServices\DbServices.csproj">
+      <Project>{b1c0c3da-c479-4a6b-a4d6-b3363d6a2638}</Project>
+      <Name>DbServices</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
