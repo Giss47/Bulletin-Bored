@@ -1,4 +1,5 @@
 ﻿using DbAdapter;
+using System.Linq;
 namespace DbServices
 {
     public static class DbUpdate
@@ -12,6 +13,14 @@ namespace DbServices
             db.SaveChanges();
         }
 
+        public static bool CheckUser(string userName, string password)
+        {
+            var user = db.User.Where(u => u.UserName == userName && u.Password == password).ToArray();
+            if (user.Length == 0)
+                return false;
+            else
+                return true;
+        }
     }
 
 

@@ -5,11 +5,19 @@ namespace Bulletin_Bored
 {
     class Program
     {
+        private static string currentUser;
 
         static void Main(string[] args)
         {
 
             var choice = WelcomePage();
+            WelcomePageChoiceSwitch(choice);
+
+            Console.ReadLine();
+        }
+
+        static void WelcomePageChoiceSwitch(string choice)
+        {
 
             if (choice == "Create Account")
             {
@@ -23,10 +31,37 @@ namespace Bulletin_Bored
             }
             else if (choice == "Sign In")
             {
+                SignIn();
+            }
+        }
 
+        static void SignIn()
+        {
+            bool userCheck = false;
+            while (!userCheck)
+            {
+                Console.Write("Enter User Name: ");
+                var userName = Console.ReadLine();
+
+                Console.Write("Enter Password: ");
+                var password = Console.ReadLine();
+
+                userCheck = DbUpdate.CheckUser(userName, password);
+
+                if (userCheck == true)
+                {
+                    Console.Clear();
+                    currentUser = userName;
+                    Console.WriteLine($"\t\t\nWelcome! You are now logged in as {currentUser}\n");
+                    var task = MainMenu();
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("User name or Password is incorrect, Please try again\n");
+                }
             }
 
-            Console.ReadLine();
         }
 
         static string ShowMenu(string prompt, string[] options)
@@ -83,6 +118,19 @@ namespace Bulletin_Bored
         {
             var options = new string[] { "Sign In", "Create Account" };
             return ShowMenu("\n\t\tWelcome to Bulletin Bored - for when you've got nothing better to do!\n\n", options);
+        }
+
+        static string MainMenu()
+        {
+            var options = new string[] { "Most Recent Posts"
+                                        ,"Most Popular Posts"
+                                        ,"Posts by Category"
+                                        ,"Search"
+                                        ,"Create a Post", "Quit" };
+
+            return ShowMenu($"\n\tMain Menu\n", options);
+
+
         }
     }
 }
