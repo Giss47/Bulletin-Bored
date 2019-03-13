@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.438
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bulletin-Bored", "Bulletin-Bored\Bulletin-Bored.csproj", "{69846558-3194-4087-B9A7-F4F8F0D2EC59}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbServices", "DbServices\DbServices.csproj", "{5C4A3A6A-DB4B-4FEE-A6E8-A34DD306625F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{69846558-3194-4087-B9A7-F4F8F0D2EC59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69846558-3194-4087-B9A7-F4F8F0D2EC59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69846558-3194-4087-B9A7-F4F8F0D2EC59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C4A3A6A-DB4B-4FEE-A6E8-A34DD306625F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C4A3A6A-DB4B-4FEE-A6E8-A34DD306625F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C4A3A6A-DB4B-4FEE-A6E8-A34DD306625F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C4A3A6A-DB4B-4FEE-A6E8-A34DD306625F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
