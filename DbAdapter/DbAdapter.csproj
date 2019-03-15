@@ -131,18 +131,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppDbContext.cs" />
-    <Compile Include="User.cs" />
-    <Compile Include="Migrations\20190313124912_FirstTest.cs" />
-    <Compile Include="Migrations\20190313124912_FirstTest.designer.cs">
-      <DependentUpon>20190313124912_FirstTest.cs</DependentUpon>
+    <Compile Include="Migrations\20190314091308_first.cs" />
+    <Compile Include="Migrations\20190314091308_first.designer.cs">
+      <DependentUpon>20190314091308_first.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\AppDbContextModelSnapshot.cs" />
+    <Compile Include="Post.cs" />
+    <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

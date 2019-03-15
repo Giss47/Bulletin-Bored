@@ -6,18 +6,47 @@ namespace Bulletin_Bored
     class Program
     {
         private static string currentUser;
-
+        private static int currentUserID;
+        private static bool isSignedIn;
+        private static string welcomeText;
         static void Main(string[] args)
         {
 
             var choice = WelcomePage();
-            WelcomePageChoiceSwitch(choice);
 
-            Console.ReadLine();
+
+
+            WelcomePageChoiceSwitch(choice);
+            currentUserID = DbUpdate.GetUserId(currentUser);
+
+            while (isSignedIn)
+            {
+                var task = MainMenu();
+                switch (task)
+                {
+                    case "Most Recent Posts":
+                        ShowRecentPosts();
+                        break;
+                    case "Most Popular Posts":
+                        ShowMostPopular();
+                        break;
+                    case "Posts by Category":
+                        break;
+                    case "Search":
+                        break;
+                    case "Create a Post":
+                        CreateNewPost();
+                        break;
+                    case "Quit":
+                        Environment.Exit(0);
+                        break;
+                }
+            }
         }
 
         static void WelcomePageChoiceSwitch(string choice)
         {
+            string task = string.Empty;
 
             if (choice == "Create Account")
             {
@@ -28,15 +57,19 @@ namespace Bulletin_Bored
                 var password = Console.ReadLine();
 
                 DbUpdate.CreateUser(userName, password);
+                Console.Clear();
+                Console.WriteLine("New User created\n");
+                isSignedIn = SignIn();
             }
             else if (choice == "Sign In")
             {
-                SignIn();
+                isSignedIn = SignIn();
             }
         }
 
-        static void SignIn()
+        static bool SignIn()
         {
+            string task = string.Empty;
             bool userCheck = false;
             while (!userCheck)
             {
@@ -52,8 +85,8 @@ namespace Bulletin_Bored
                 {
                     Console.Clear();
                     currentUser = userName;
-                    Console.WriteLine($"\t\t\nWelcome! You are now logged in as {currentUser}\n");
-                    var task = MainMenu();
+                    welcomeText = $"Welcome! You are now logged in as {currentUser}\n";
+
                 }
                 else
                 {
@@ -61,6 +94,8 @@ namespace Bulletin_Bored
                     Console.WriteLine("User name or Password is incorrect, Please try again\n");
                 }
             }
+
+            return true;
 
         }
 
@@ -122,14 +157,94 @@ namespace Bulletin_Bored
 
         static string MainMenu()
         {
+            Console.WriteLine("\t\t\n" + welcomeText + "\n");
             var options = new string[] { "Most Recent Posts"
                                         ,"Most Popular Posts"
                                         ,"Posts by Category"
                                         ,"Search"
                                         ,"Create a Post", "Quit" };
 
-            return ShowMenu($"\n\tMain Menu\n", options);
+            return ShowMenu($"\tMain Menu\n", options);
 
+
+        }
+
+        static void CreateNewPost()
+        {
+            Console.WriteLine("Enter Text(Max 300 Char)");
+            var text = Console.ReadLine();
+            DbUpdate.CreatePost(text, currentUserID);
+        }
+
+        static void ShowRecentPosts()
+        {
+
+            var posts = DbUpdate.GetLatestPosts();
+            var postDetails = new string[posts.Length];
+            for (int i = 0; i < posts.Length; i++)
+            {
+                postDetails[i] = string.Format($"Post by {posts[i].User.UserName} at {posts[i].Date} ({posts[i].Like}) likes");
+            }
+
+            string choice = ShowMenu("Recent Post:\n", postDetails);
+
+            int index = 0;
+            for (int i = 0; i < postDetails.Length; i++)
+            {
+                if (postDetails[i] == choice)
+                {
+                    index = i;
+                }
+            }
+
+            Console.WriteLine(choice + ":\n\n" + posts[index].Text);
+
+            Console.WriteLine("\nHit Space to Like");
+
+            if (Console.ReadKey().Key == ConsoleKey.Spacebar)
+            {
+                DbUpdate.LikePost(posts[index].Id);
+            }
+
+            Console.WriteLine("\nHit AnyKey to return");
+            Console.ReadKey();
+            Console.Clear();
+
+        }
+
+        static void ShowMostPopular()
+        {
+
+            var posts = DbUpdate.GetMostPopular();
+            var postDetails = new string[posts.Length];
+            for (int i = 0; i < posts.Length; i++)
+            {
+                postDetails[i] = string.Format($"Post by {posts[i].User.UserName} at {posts[i].Date} ({posts[i].Like}) likes");
+            }
+
+            string choice = ShowMenu("Recent Post:\n", postDetails);
+
+            int index = 0;
+            for (int i = 0; i < postDetails.Length; i++)
+            {
+                if (postDetails[i] == choice)
+                {
+                    index = i;
+                }
+            }
+
+            Console.WriteLine(choice + ":\n\n" + posts[index].Text);
+
+            Console.WriteLine("\nHit Space to Like");
+
+            if (Console.ReadKey().Key == ConsoleKey.Spacebar)
+            {
+                DbUpdate.LikePost(posts[index].Id);
+            }
+
+            Console.WriteLine("\nHit AnyKey to return");
+            Console.ReadKey();
+            Console.Clear();
 
         }
     }
