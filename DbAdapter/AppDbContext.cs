@@ -10,6 +10,10 @@ namespace DbAdapter
 
         public DbSet<Post> Post { get; set; }
 
+        public DbSet<Category> Category { get; set; }
+
+        public DbSet<PostCategory> PostCategory { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             //options.UseSqlServer(@"Data Source=den1.mssql7.gear.host;Initial Catalog=bulletinbored; User ID=bulletinbored;Password=Ad6krxxu!~o9")
@@ -24,6 +28,9 @@ namespace DbAdapter
             modelBuilder.Entity<Post>()
             .Property(p => p.Date)
             .HasDefaultValueSql("getutcdate()");
+
+            modelBuilder.Entity<PostCategory>()
+            .HasKey(pc => new { pc.PostId, pc.CategoryId });
 
         }
     }

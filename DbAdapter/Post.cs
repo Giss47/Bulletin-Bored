@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,5 +19,7 @@ namespace DbAdapter
 
         [Required]
         public User User { get; set; }
+
+        public ICollection<PostCategory> postCategory { get; set; }
     }
 }
