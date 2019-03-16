@@ -1,5 +1,6 @@
 ﻿using DbAdapter;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 namespace DbServices
 {
@@ -23,9 +24,15 @@ namespace DbServices
                 return true;
         }
 
-        public static void CreatePost(string text, int userId)
+        public static void CreatePost(string text, int userId, string[] types)
         {
-            var post = new Post() { Text = text, User = new User { Id = userId } };
+            var post = new Post() { Text = text, User = new User { Id = userId }, postCategory = new List<PostCategory>() };
+            foreach (var type in types)
+            {
+                var ct = db.Category.First(c => c.Type.ToString() == type);
+                post.postCategory.Add(new PostCategory { Post = post, Category = ct });
+            }
+
             db.Add(post);
             db.SaveChanges();
         }
@@ -40,7 +47,7 @@ namespace DbServices
         public static Post[] GetLatestPosts()
         {
 
-            return db.Post.Include(p => p.User).OrderByDescending(p => p.Date).ToArray();
+            return db.Post.Include(p => p.postCategory).ThenInclude(pc => pc.Category).Include(p => p.User).OrderByDescending(p => p.Date).ToArray();
 
         }
 
@@ -54,7 +61,21 @@ namespace DbServices
         public static Post[] GetMostPopular()
         {
 
-            return db.Post.Include(p => p.User).OrderByDescending(p => p.Like).Take(5).ToArray();
+            return db.Post.Include(p => p.User).Include(p => p.postCategory).ThenInclude(pc => pc.Category).OrderByDescending(p => p.Like).Take(5).ToArray();
+
+        }
+
+        public static string[] GetAllCatergories()
+        {
+            var categories = db.Category.Select(c => c.Type).ToArray();
+            var types = new string[categories.Length];
+
+            for (int i = 0; i < types.Length; i++)
+            {
+                types[i] = categories[i].ToString();
+            }
+
+            return types;
 
         }
 

@@ -1,5 +1,6 @@
 using DbServices;
 using System;
+using System.Collections.Generic;
 
 namespace Bulletin_Bored
 {
@@ -149,6 +150,85 @@ namespace Bulletin_Bored
             return options[selected];
         }
 
+        static string[] ShowMultiMenu(string prompt, string[] options)
+        {
+            Console.WriteLine(prompt);
+
+            var selected = new List<int>();
+            int focused = 0;
+
+            // Hide the cursor that will blink after calling ReadKey.
+            Console.CursorVisible = false;
+
+            ConsoleKey? key = null;
+            while (key != ConsoleKey.Enter)
+            {
+                // If this is not the first iteration, move the cursor to the first line of the menu.
+                if (key != null)
+                {
+                    Console.CursorLeft = 0;
+                    Console.CursorTop = Console.CursorTop - options.Length;
+                }
+
+                // Print all the options, highlighting the focused one and the selected ones.
+                for (int i = 0; i < options.Length; i++)
+                {
+                    var option = options[i];
+                    if (i == focused)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Blue;
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                    else if (selected.Contains(i))
+                    {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+
+                    if (selected.Contains(i)) Console.Write("+");
+                    else Console.Write("-");
+                    Console.WriteLine(" " + option);
+
+                    Console.ResetColor();
+                }
+
+                // Read another key and adjust the selected value before looping to repeat all of this.
+                key = Console.ReadKey().Key;
+                if (key == ConsoleKey.DownArrow)
+                {
+                    focused = Math.Min(focused + 1, options.Length - 1);
+                }
+                else if (key == ConsoleKey.UpArrow)
+                {
+                    focused = Math.Max(focused - 1, 0);
+                }
+                else if (key == ConsoleKey.Spacebar)
+                {
+                    if (selected.Contains(focused))
+                    {
+                        selected.Remove(focused);
+                    }
+                    else
+                    {
+                        selected.Add(focused);
+                    }
+                }
+            }
+
+            // Reset the cursor and return the selected options.
+            Console.CursorVisible = true;
+
+            // For consistency and predictability, sort selected indexes so that returned strings are in order shown in menu.
+            selected.Sort();
+            var selectedStrings = new List<string>();
+            foreach (int i in selected)
+            {
+                selectedStrings.Add(options[i]);
+            }
+            return selectedStrings.ToArray();
+        }
+
+
         static string WelcomePage()
         {
             var options = new string[] { "Sign In", "Create Account" };
@@ -173,7 +253,10 @@ namespace Bulletin_Bored
         {
             Console.WriteLine("Enter Text(Max 300 Char)");
             var text = Console.ReadLine();
-            DbUpdate.CreatePost(text, currentUserID);
+            var types = ShowMultiMenu("\nCatergories:", DbUpdate.GetAllCatergories());
+
+            DbUpdate.CreatePost(text, currentUserID, types);
+            Console.Clear();
         }
 
         static void ShowRecentPosts()
@@ -181,9 +264,23 @@ namespace Bulletin_Bored
 
             var posts = DbUpdate.GetLatestPosts();
             var postDetails = new string[posts.Length];
+
+
             for (int i = 0; i < posts.Length; i++)
             {
-                postDetails[i] = string.Format($"Post by {posts[i].User.UserName} at {posts[i].Date} ({posts[i].Like}) likes");
+                string categories = "";
+
+                foreach (var type in posts[i].postCategory)
+                {
+                    categories += type.Category.Type + ", ";
+
+                }
+
+                if (categories.Length != 0)
+                    categories = categories.Remove(categories.Length - 2);
+
+
+                postDetails[i] = string.Format($"Post by {posts[i].User.UserName} at {posts[i].Date} ({posts[i].Like}) likes ({categories})");
             }
 
             string choice = ShowMenu("Recent Post:\n", postDetails);
@@ -217,9 +314,23 @@ namespace Bulletin_Bored
 
             var posts = DbUpdate.GetMostPopular();
             var postDetails = new string[posts.Length];
+
+
             for (int i = 0; i < posts.Length; i++)
             {
-                postDetails[i] = string.Format($"Post by {posts[i].User.UserName} at {posts[i].Date} ({posts[i].Like}) likes");
+                string categories = "";
+
+                foreach (var type in posts[i].postCategory)
+                {
+                    categories += type.Category.Type + ", ";
+
+                }
+
+                if (categories.Length != 0)
+                    categories = categories.Remove(categories.Length - 2);
+
+
+                postDetails[i] = string.Format($"Post by {posts[i].User.UserName} at {posts[i].Date} ({posts[i].Like}) likes ({categories})");
             }
 
             string choice = ShowMenu("Recent Post:\n", postDetails);
