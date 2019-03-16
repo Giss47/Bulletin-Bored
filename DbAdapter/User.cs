@@ -16,6 +16,8 @@ namespace DbAdapter
         [MaxLength(20)]
         public string Password { get; set; }
 
+        public bool Administrator { get; set; }
+
         public ICollection<Post> Posts { get; set; }
     }
 }

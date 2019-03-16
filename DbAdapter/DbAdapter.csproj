@@ -140,6 +140,10 @@
     <Compile Include="Migrations\20190315084758_PostCategoryRelation.designer.cs">
       <DependentUpon>20190315084758_PostCategoryRelation.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20190316094003_admin.cs" />
+    <Compile Include="Migrations\20190316094003_admin.designer.cs">
+      <DependentUpon>20190316094003_admin.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\AppDbContextModelSnapshot.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="PostCategory.cs" />

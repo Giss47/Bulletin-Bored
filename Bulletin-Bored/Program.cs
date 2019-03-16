@@ -1,3 +1,4 @@
+using DbAdapter;
 using DbServices;
 using System;
 using System.Collections.Generic;
@@ -7,9 +8,10 @@ namespace Bulletin_Bored
     class Program
     {
         private static string currentUser;
-        private static int currentUserID;
+        private static User User;
         private static bool isSignedIn;
         private static string welcomeText;
+        private static bool admin;
         static void Main(string[] args)
         {
 
@@ -18,7 +20,8 @@ namespace Bulletin_Bored
 
 
             WelcomePageChoiceSwitch(choice);
-            currentUserID = DbUpdate.GetUserId(currentUser);
+            User = DbUpdate.GetCurrentUser(currentUser);
+            admin = User.Administrator;
 
             while (isSignedIn)
             {
@@ -34,9 +37,13 @@ namespace Bulletin_Bored
                     case "Posts by Category":
                         break;
                     case "Search":
+                        SearchByPhrase();
                         break;
                     case "Create a Post":
                         CreateNewPost();
+                        break;
+                    case "Delete Post":
+                        DeletePosts();
                         break;
                     case "Quit":
                         Environment.Exit(0);
@@ -57,8 +64,12 @@ namespace Bulletin_Bored
                 Console.Write("Choose Password: ");
                 var password = Console.ReadLine();
 
-                DbUpdate.CreateUser(userName, password);
+                Console.WriteLine("If Admin Enter Sepecial Password, otherwise leave empty");
+                var adminPassword = Console.ReadLine();
+
+                DbUpdate.CreateUser(userName, password, adminPassword);
                 Console.Clear();
+
                 Console.WriteLine("New User created\n");
                 isSignedIn = SignIn();
             }
@@ -242,6 +253,7 @@ namespace Bulletin_Bored
                                         ,"Most Popular Posts"
                                         ,"Posts by Category"
                                         ,"Search"
+                                        ,"Delete Post"
                                         ,"Create a Post", "Quit" };
 
             return ShowMenu($"\tMain Menu\n", options);
@@ -255,7 +267,7 @@ namespace Bulletin_Bored
             var text = Console.ReadLine();
             var types = ShowMultiMenu("\nCatergories:", DbUpdate.GetAllCatergories());
 
-            DbUpdate.CreatePost(text, currentUserID, types);
+            DbUpdate.CreatePost(text, User.Id, types);
             Console.Clear();
         }
 
@@ -263,6 +275,8 @@ namespace Bulletin_Bored
         {
 
             var posts = DbUpdate.GetLatestPosts();
+
+
             var postDetails = new string[posts.Length];
 
 
@@ -358,5 +372,136 @@ namespace Bulletin_Bored
             Console.Clear();
 
         }
+
+        static void SearchByPhrase()
+        {
+            Console.Write("Enter Prase to search: ");
+            var phrase = Console.ReadLine();
+
+
+            var posts = DbUpdate.SearchPostByPhrase(phrase);
+
+            if (posts.Length != 0)
+            {
+                var postDetails = new string[posts.Length];
+
+
+                for (int i = 0; i < posts.Length; i++)
+                {
+                    string categories = "";
+
+                    foreach (var type in posts[i].postCategory)
+                    {
+                        categories += type.Category.Type + ", ";
+
+                    }
+
+                    if (categories.Length != 0)
+                        categories = categories.Remove(categories.Length - 2);
+
+
+                    postDetails[i] = string.Format($"Post by {posts[i].User.UserName} at {posts[i].Date.ToShortDateString()} {posts[i].Date.ToShortTimeString()} ({posts[i].Like}) likes ({categories})");
+                }
+
+                string choice = ShowMenu($"\nPosts with {{{phrase}}} :\n", postDetails);
+
+                int index = 0;
+                for (int i = 0; i < postDetails.Length; i++)
+                {
+                    if (postDetails[i] == choice)
+                    {
+                        index = i;
+                    }
+                }
+
+                Console.WriteLine(choice + ":\n\n" + posts[index].Text);
+
+                Console.WriteLine("\nPerss any key to continue");
+                Console.ReadKey();
+            }
+
+            else
+            {
+                Console.WriteLine("\nNo Result\n\nPress any Key to Continue");
+                Console.ReadKey();
+                Console.Clear();
+            }
+
+
+
+
+
+        }
+
+        static void DeletePosts()
+        {
+            Post[] posts;
+            if (admin)
+            {
+                posts = DbUpdate.GetLatestPosts();
+            }
+            else
+            {
+                posts = DbUpdate.GetPostByUser(User.Id);
+            }
+
+            if (posts.Length != 0)
+            {
+                var postDetails = new string[posts.Length];
+
+
+                for (int i = 0; i < posts.Length; i++)
+                {
+                    string categories = "";
+
+                    foreach (var type in posts[i].postCategory)
+                    {
+                        categories += type.Category.Type + ", ";
+
+                    }
+
+                    if (categories.Length != 0)
+                        categories = categories.Remove(categories.Length - 2);
+
+
+                    postDetails[i] = string.Format($"Post by {posts[i].User.UserName} at {posts[i].Date} ({posts[i].Like}) likes ({categories})");
+                }
+
+                string choice = ShowMenu("Recent Post:\n", postDetails);
+
+                int index = 0;
+                for (int i = 0; i < postDetails.Length; i++)
+                {
+                    if (postDetails[i] == choice)
+                    {
+                        index = i;
+                    }
+                }
+
+                Console.WriteLine(choice + ":\n\n" + posts[index].Text);
+
+                Console.WriteLine("\nHit Space to delete");
+
+                if (Console.ReadKey().Key == ConsoleKey.Spacebar)
+                {
+                    DbUpdate.DeletePost(posts[index]);
+                }
+
+                Console.WriteLine("\nHit AnyKey to return");
+                Console.ReadKey();
+                Console.Clear();
+            }
+            else
+            {
+                Console.WriteLine("\nNo Posts by You current user Found!\nPress Any key to Continue");
+                Console.ReadKey();
+                Console.Clear();
+
+            }
+
+
+        }
+
+
     }
 }

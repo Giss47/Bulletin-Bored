@@ -8,9 +8,15 @@ namespace DbServices
     {
         static AppDbContext db = new AppDbContext();
 
-        public static void CreateUser(string userName, string password)
+        public static void CreateUser(string userName, string password, string adminPassword)
         {
-            var user = new User { UserName = userName, Password = password };
+            var admin = false;
+            if (adminPassword == "Secret")
+            {
+                admin = true;
+            }
+
+            var user = new User { UserName = userName, Password = password, Administrator = admin };
             db.Add(user);
             db.SaveChanges();
         }
@@ -37,9 +43,9 @@ namespace DbServices
             db.SaveChanges();
         }
 
-        public static int GetUserId(string userName)
+        public static User GetCurrentUser(string userName)
         {
-            var userId = db.User.Where(u => u.UserName == userName).Select(u => u.Id).Single();
+            var userId = db.User.Where(u => u.UserName == userName).Single();
 
             return userId;
         }
@@ -78,6 +84,25 @@ namespace DbServices
             return types;
 
         }
+
+        public static Post[] SearchPostByPhrase(string phrase)
+        {
+            return db.Post.Where(p => p.Text.Contains(phrase)).Include(p => p.User).Include(p => p.postCategory).ThenInclude(pc => pc.Category).ToArray();
+        }
+
+        public static Post[] GetPostByUser(int userId)
+        {
+            return db.Post.Where(p => p.User.Id == userId).Include(p => p.User).Include(p => p.postCategory).ThenInclude(pc => pc.Category).ToArray();
+
+        }
+
+        public static void DeletePost(Post post)
+        {
+            db.Remove(post);
+            db.SaveChanges();
+        }
+
+
 
 
     }
