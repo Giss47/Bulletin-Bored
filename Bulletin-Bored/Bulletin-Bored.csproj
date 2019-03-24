@@ -50,9 +50,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DbAdapter\DbAdapter.csproj">
+    <ProjectReference Include="..\DbAdapter\DbData.csproj">
       <Project>{5c4a3a6a-db4b-4fee-a6e8-a34dd306625f}</Project>
-      <Name>DbAdapter</Name>
+      <Name>DbData</Name>
     </ProjectReference>
     <ProjectReference Include="..\DbServices\DbServices.csproj">
       <Project>{b1c0c3da-c479-4a6b-a4d6-b3363d6a2638}</Project>

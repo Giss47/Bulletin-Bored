@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace DbAdapter
@@ -10,7 +11,7 @@ namespace DbAdapter
 
         [Required]
         [MaxLength(20)]
-        public string UserName { get; set; }
+        public string UserName { get; private set; }
 
         [Required]
         [MaxLength(20)]
@@ -19,5 +20,16 @@ namespace DbAdapter
         public bool Administrator { get; set; }
 
         public ICollection<Post> Posts { get; set; }
+
+        //Moving validation to data layer, a partialy implementation of DDD patter
+        public void SetUserName(string name)
+        {
+            if (name.Contains("@"))
+            {
+                throw new InvalidOperationException("Name can't contain @");
+            }
+
+            UserName = name;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DbAdapter;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 namespace DbServices
@@ -16,9 +17,20 @@ namespace DbServices
                 admin = true;
             }
 
-            var user = new User { UserName = userName, Password = password, Administrator = admin };
-            db.Add(user);
-            db.SaveChanges();
+            var user = new User { Password = password, Administrator = admin };
+            try
+            {
+                user.SetUserName(userName);
+                db.Add(user);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message + "\nEnter any Key to return");
+                Console.ReadKey();
+
+            }
+
         }
 
         public static bool CheckUser(string userName, string password)
